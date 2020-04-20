@@ -1,0 +1,63 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Video P2P Test</title>
+
+  <!-- Video.js build -->
+  <link href="//vjs.zencdn.net/7.4.1/video-js.min.css" rel="stylesheet">
+  <script src="//vjs.zencdn.net/7.4.1/video.min.js"></script>
+
+  <!-- Streamroot source handler plugin -->
+  <script src="//cdn.streamroot.io/videojs-hlsjs-plugin/1/stable/videojs-hlsjs-plugin.js"></script>
+
+  <!-- Streamroot DNA plugin -->
+  <script src="//cdn.streamroot.io/videojs-hls-dna-plugin/1/stable/videojs-hls-dna-plugin.js?srKey=STREAMROOT_KEY"></script>
+
+  <!-- Streamroot DNA graph -->
+  <script src="//tools.streamroot.io/usage-graphs/stable/graphs.js"></script>
+
+  <!-- JS file for multi-CDN P2P -->
+  <script src="contentIdFn.js"></script>
+</head>
+<body>
+  <h1 style="width: 40%; margin: auto; text-align: center">Video P2P Test - Cloudfront</h1>
+  <video id="demoplayer" class="video-js" style="width: 100%; margin-top: 5em" controls>
+    <source src="http://wowza-test-cloudfront.streamroot.io/vodOrigin/tos1500.mp4/playlist.m3u8" type="application/x-mpegURL">
+  </video>
+  <script>
+    var options = {
+      html5: {
+        hlsjsConfig: {},
+      },
+      dnaConfig: {
+        "contentIdGenerator" : contentIdFn
+      },
+    };
+
+    var player = videojs("demoplayer", options);
+  </script>
+
+  <div style="width: 10%; margin: 5em auto">
+    <button id="upload-button" style="width: 100%">Deactivate P2P Upload</button>
+  </div>
+
+  <script>
+    const uploadButton = document.getElementById("upload-button")
+
+    uploadButton.addEventListener("click", (event) => {
+      const live = Streamroot.instances[0].dnaUploadAllowed
+      if (live == true) {
+        Streamroot.instances[0].dnaUploadAllowed = false
+        uploadButton.innerText = "Activate P2P Upload"
+      }
+      else  {
+        Streamroot.instances[0].dnaUploadAllowed = true
+        uploadButton.innerText = "Deactivate P2P Upload"
+      }
+    });
+  </script>
+
+  <div id="streamroot-graphs"></div>
+</body>
+</html>
